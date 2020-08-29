@@ -298,9 +298,22 @@ namespace AssetStudioGUI
             return true;
         }
 
-        private static bool TryExportFile(string dir, AssetItem item, string extension, out string fullPath)
+        private static bool TryExportFile(string dir, AssetItem item, string extension, out string fullPath, bool isDump = false)
         {
-            var fileName = FixFileName(item.Text);
+            var itemName = item.Text;
+            if (Properties.Settings.Default.pathIDAsDumpName && isDump)
+                itemName = item.m_PathID.ToString();
+            if (Properties.Settings.Default.pathIDAsImageName && !isDump)
+            {
+                switch (item.Type)
+                {
+                    case ClassIDType.Texture2D:
+                    case ClassIDType.Sprite:
+                        itemName = item.m_PathID.ToString();
+                        break;
+                }
+            }
+            var fileName = FixFileName(itemName);
             fullPath = Path.Combine(dir, fileName + extension);
             if (!File.Exists(fullPath))
             {
@@ -362,7 +375,7 @@ namespace AssetStudioGUI
 
         public static bool ExportDumpFile(AssetItem item, string exportPath)
         {
-            if (!TryExportFile(exportPath, item, ".txt", out var exportFullPath))
+            if (!TryExportFile(exportPath, item, ".txt", out var exportFullPath, true))
                 return false;
             var str = item.Asset.Dump();
             if (str == null && item.Asset is MonoBehaviour m_MonoBehaviour)

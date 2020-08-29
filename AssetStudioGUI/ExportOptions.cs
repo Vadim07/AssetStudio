@@ -33,8 +33,8 @@ namespace AssetStudioGUI
             scaleFactor.Value = Properties.Settings.Default.scaleFactor;
             fbxVersion.SelectedIndex = Properties.Settings.Default.fbxVersion;
             fbxFormat.SelectedIndex = Properties.Settings.Default.fbxFormat;
-            pathIDAsImageName.Checked = Properties.Settings.Default.pathIDAsImageName;
             pathIDAsDumpName.Checked = Properties.Settings.Default.pathIDAsDumpName;
+            pathIDAsImageName.Checked = Properties.Settings.Default.pathIDAsImageName;
         }
 
         private void OKbutton_Click(object sender, EventArgs e)
@@ -63,8 +63,8 @@ namespace AssetStudioGUI
             Properties.Settings.Default.scaleFactor = scaleFactor.Value;
             Properties.Settings.Default.fbxVersion = fbxVersion.SelectedIndex;
             Properties.Settings.Default.fbxFormat = fbxFormat.SelectedIndex;
-            Properties.Settings.Default.pathIDAsImageName = pathIDAsImageName.Checked;
             Properties.Settings.Default.pathIDAsDumpName = pathIDAsDumpName.Checked;
+            Properties.Settings.Default.pathIDAsImageName = pathIDAsImageName.Checked;
             Properties.Settings.Default.Save();
             DialogResult = DialogResult.OK;
             Close();

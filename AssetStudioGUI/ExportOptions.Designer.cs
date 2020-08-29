@@ -104,7 +104,7 @@
             this.groupBox1.Controls.Add(this.converttexture);
             this.groupBox1.Location = new System.Drawing.Point(12, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(246, 327);
+            this.groupBox1.Size = new System.Drawing.Size(252, 327);
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Export";
@@ -112,9 +112,7 @@
             // pathIDAsDumpName
             // 
             this.pathIDAsDumpName.AutoSize = true;
-            this.pathIDAsDumpName.Checked = true;
-            this.pathIDAsDumpName.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.pathIDAsDumpName.Location = new System.Drawing.Point(6, 217);
+            this.pathIDAsDumpName.Location = new System.Drawing.Point(6, 240);
             this.pathIDAsDumpName.Name = "pathIDAsDumpName";
             this.pathIDAsDumpName.Size = new System.Drawing.Size(201, 17);
             this.pathIDAsDumpName.TabIndex = 12;
@@ -124,9 +122,7 @@
             // pathIDAsImageName
             // 
             this.pathIDAsImageName.AutoSize = true;
-            this.pathIDAsImageName.Checked = true;
-            this.pathIDAsImageName.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.pathIDAsImageName.Location = new System.Drawing.Point(6, 196);
+            this.pathIDAsImageName.Location = new System.Drawing.Point(6, 217);
             this.pathIDAsImageName.Name = "pathIDAsImageName";
             this.pathIDAsImageName.Size = new System.Drawing.Size(234, 17);
             this.pathIDAsImageName.TabIndex = 11;
@@ -276,9 +272,9 @@
             this.groupBox2.Controls.Add(this.castToBone);
             this.groupBox2.Controls.Add(this.exportAllNodes);
             this.groupBox2.Controls.Add(this.eulerFilter);
-            this.groupBox2.Location = new System.Drawing.Point(258, 13);
+            this.groupBox2.Location = new System.Drawing.Point(264, 13);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(206, 327);
+            this.groupBox2.Size = new System.Drawing.Size(212, 327);
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Fbx";
@@ -481,7 +477,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel;
-            this.ClientSize = new System.Drawing.Size(477, 380);
+            this.ClientSize = new System.Drawing.Size(490, 380);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.Cancel);
@@ -540,7 +536,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.CheckBox restoreExtensionName;
         private System.Windows.Forms.CheckBox openAfterExport;
-        private System.Windows.Forms.CheckBox pathIDAsImageName;
         private System.Windows.Forms.CheckBox pathIDAsDumpName;
+        private System.Windows.Forms.CheckBox pathIDAsImageName;
     }
 }
