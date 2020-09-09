@@ -94,6 +94,7 @@ namespace AssetStudioGUI
             displayAll.Checked = Properties.Settings.Default.displayAll;
             displayInfo.Checked = Properties.Settings.Default.displayInfo;
             enablePreview.Checked = Properties.Settings.Default.enablePreview;
+            useAlphaTextureForSprites.Checked = Properties.Settings.Default.useAlphaTextureForSprites;
             FMODinit();
 
             Logger.Default = new GUILogger(StatusStripUpdate);
@@ -443,6 +444,13 @@ namespace AssetStudioGUI
             Properties.Settings.Default.Save();
         }
 
+        private void useAlphaTextureForSprites_Check(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useAlphaTextureForSprites = useAlphaTextureForSprites.Checked;
+            Properties.Settings.Default.Save();
+            PreviewAsset(lastSelectedItem);
+        }
+
         private void showExpOpt_Click(object sender, EventArgs e)
         {
             var exportOpt = new ExportOptions();
@@ -621,10 +629,11 @@ namespace AssetStudioGUI
             assetListView.EndUpdate();
         }
 
-        private void selectAsset(object sender, ListViewItemSelectionChangedEventArgs e)
+        private void previewPanelReset() 
         {
             previewPanel.BackgroundImage = Properties.Resources.preview;
             previewPanel.BackgroundImageLayout = ImageLayout.Center;
+
             classTextBox.Visible = false;
             assetInfoLabel.Visible = false;
             assetInfoLabel.Text = null;
@@ -632,9 +641,15 @@ namespace AssetStudioGUI
             fontPreviewBox.Visible = false;
             FMODpanel.Visible = false;
             glControl1.Visible = false;
-            StatusStripUpdate("");
+            dumpTextBox.Text = null;
 
+            StatusStripUpdate("");
             FMODreset();
+        }
+
+        private void selectAsset(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            previewPanelReset();
 
             lastSelectedItem = (AssetItem)e.Item;
 
@@ -662,7 +677,7 @@ namespace AssetStudioGUI
             {
                 if (!classTextBox.Visible)
                 {
-                    assetInfoLabel.Visible = false;
+                    previewPanelReset();
                     classTextBox.Visible = true;
                 }
                 classTextBox.Text = ((TypeTreeItem)classesListView.SelectedItems[0]).ToString();
@@ -1140,9 +1155,11 @@ namespace AssetStudioGUI
             }
         }
 
+      
+
         private void PreviewSprite(AssetItem assetItem, Sprite m_Sprite)
         {
-            var bitmap = m_Sprite.GetImage();
+            var bitmap = m_Sprite.GetImage(Properties.Settings.Default.useAlphaTextureForSprites);
             if (bitmap != null)
             {
                 assetItem.InfoText = $"Width: {bitmap.Width}\nHeight: {bitmap.Height}\n";
@@ -1208,14 +1225,8 @@ namespace AssetStudioGUI
             assetListView.Items.Clear();
             classesListView.Items.Clear();
             classesListView.Groups.Clear();
-            previewPanel.BackgroundImage = Properties.Resources.preview;
             imageTexture?.Dispose();
-            previewPanel.BackgroundImageLayout = ImageLayout.Center;
-            assetInfoLabel.Visible = false;
-            assetInfoLabel.Text = null;
-            textPreviewBox.Visible = false;
-            fontPreviewBox.Visible = false;
-            glControl1.Visible = false;
+            previewPanelReset();
             lastSelectedItem = null;
             sortColumn = -1;
             reverseSort = false;
@@ -1229,8 +1240,6 @@ namespace AssetStudioGUI
             {
                 filterTypeToolStripMenuItem.DropDownItems.RemoveAt(1);
             }
-
-            FMODreset();
         }
 
         private void assetListView_MouseClick(object sender, MouseEventArgs e)
@@ -1258,6 +1267,18 @@ namespace AssetStudioGUI
                 tempClipboard = assetListView.HitTest(new Point(e.X, e.Y)).SubItem.Text;
                 contextMenuStrip1.Show(assetListView, e.X, e.Y);
             }
+        }
+
+        private void assetListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (assetListView.SelectedIndices.Count > 1)
+                StatusStripUpdate($"Selected {assetListView.SelectedIndices.Count} assets.");
+        }
+
+        private void assetListView_VirtualItemsSelectionRangeChanged(object sender, ListViewVirtualItemsSelectionRangeChangedEventArgs e)
+        {
+            if (assetListView.SelectedIndices.Count > 1)
+                StatusStripUpdate($"Selected {assetListView.SelectedIndices.Count} assets.");
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1960,7 +1981,7 @@ namespace AssetStudioGUI
 
         private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl2.SelectedIndex == 1 && lastSelectedItem != null)
+            if (tabControl2.SelectedIndex == 1 && lastSelectedItem != null && tabControl1.SelectedIndex != 2 && !classesListView.SelectedItems.Contains(lastSelectedItem))
             {
                 dumpTextBox.Text = DumpAsset(lastSelectedItem.Asset);
             }

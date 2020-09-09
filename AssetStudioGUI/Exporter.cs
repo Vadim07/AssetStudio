@@ -270,9 +270,17 @@ namespace AssetStudioGUI
                     tga = true;
                     break;
             }
+            if (Properties.Settings.Default.sepFolderAvatars && item.Container.Contains("charavatars"))
+                exportPath = Path.Combine(exportPath, "Avatars");
+            else if (Properties.Settings.Default.sepFolderPortraits && item.Container.Contains("portraits"))
+                exportPath = Path.Combine(exportPath, "Portraits");
+            else if (Properties.Settings.Default.sepFolderSkills && item.Container.Contains("skill_icons_hub"))
+                exportPath = Path.Combine(exportPath, "Character_Skills");
+            else if (Properties.Settings.Default.sepFolderSkills && item.Container.Contains("building/skills"))
+                exportPath = Path.Combine(exportPath, "Building_Skills");
             if (!TryExportFile(exportPath, item, "." + type.ToLower(), out var exportFullPath))
                 return false;
-            var bitmap = ((Sprite)item.Asset).GetImage();
+            var bitmap = ((Sprite)item.Asset).GetImage(Properties.Settings.Default.useAlphaTextureForSprites);
             if (bitmap != null)
             {
                 if (tga)

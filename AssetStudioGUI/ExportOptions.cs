@@ -35,6 +35,12 @@ namespace AssetStudioGUI
             fbxFormat.SelectedIndex = Properties.Settings.Default.fbxFormat;
             pathIDAsDumpName.Checked = Properties.Settings.Default.pathIDAsDumpName;
             pathIDAsImageName.Checked = Properties.Settings.Default.pathIDAsImageName;
+            sepFolderAvatars.Checked = assetGroupOptions.SelectedIndex == 1 ? false : Properties.Settings.Default.sepFolderAvatars;
+            sepFolderPortraits.Checked = assetGroupOptions.SelectedIndex == 1 ? false : Properties.Settings.Default.sepFolderPortraits;
+            sepFolderSkills.Checked = assetGroupOptions.SelectedIndex == 1 ? false : Properties.Settings.Default.sepFolderSkills;
+            sepFolderAvatars.Enabled = assetGroupOptions.SelectedIndex != 1;
+            sepFolderPortraits.Enabled = assetGroupOptions.SelectedIndex != 1;
+            sepFolderSkills.Enabled = assetGroupOptions.SelectedIndex != 1;
         }
 
         private void OKbutton_Click(object sender, EventArgs e)
@@ -65,6 +71,9 @@ namespace AssetStudioGUI
             Properties.Settings.Default.fbxFormat = fbxFormat.SelectedIndex;
             Properties.Settings.Default.pathIDAsDumpName = pathIDAsDumpName.Checked;
             Properties.Settings.Default.pathIDAsImageName = pathIDAsImageName.Checked;
+            Properties.Settings.Default.sepFolderAvatars = sepFolderAvatars.Checked;
+            Properties.Settings.Default.sepFolderPortraits = sepFolderPortraits.Checked;
+            Properties.Settings.Default.sepFolderSkills = sepFolderSkills.Checked;
             Properties.Settings.Default.Save();
             DialogResult = DialogResult.OK;
             Close();
@@ -74,6 +83,16 @@ namespace AssetStudioGUI
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void assetGroupOptions_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            sepFolderAvatars.Checked = assetGroupOptions.SelectedIndex == 1 ? false : Properties.Settings.Default.sepFolderAvatars;
+            sepFolderPortraits.Checked = assetGroupOptions.SelectedIndex == 1 ? false : Properties.Settings.Default.sepFolderPortraits;
+            sepFolderSkills.Checked = assetGroupOptions.SelectedIndex == 1 ? false : Properties.Settings.Default.sepFolderSkills;
+            sepFolderAvatars.Enabled = assetGroupOptions.SelectedIndex != 1;
+            sepFolderPortraits.Enabled = assetGroupOptions.SelectedIndex != 1;
+            sepFolderSkills.Enabled = assetGroupOptions.SelectedIndex != 1;
         }
     }
 }

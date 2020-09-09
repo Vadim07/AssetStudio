@@ -31,10 +31,14 @@
             this.OKbutton = new System.Windows.Forms.Button();
             this.Cancel = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.pathIDAsDumpName = new System.Windows.Forms.CheckBox();
-            this.pathIDAsImageName = new System.Windows.Forms.CheckBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.sepFolderSkills = new System.Windows.Forms.CheckBox();
+            this.sepFolderPortraits = new System.Windows.Forms.CheckBox();
+            this.sepFolderAvatars = new System.Windows.Forms.CheckBox();
             this.openAfterExport = new System.Windows.Forms.CheckBox();
             this.restoreExtensionName = new System.Windows.Forms.CheckBox();
+            this.pathIDAsDumpName = new System.Windows.Forms.CheckBox();
+            this.pathIDAsImageName = new System.Windows.Forms.CheckBox();
             this.assetGroupOptions = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.convertAudio = new System.Windows.Forms.CheckBox();
@@ -62,6 +66,7 @@
             this.exportAllNodes = new System.Windows.Forms.CheckBox();
             this.eulerFilter = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.scaleFactor)).BeginInit();
@@ -71,7 +76,7 @@
             // 
             // OKbutton
             // 
-            this.OKbutton.Location = new System.Drawing.Point(308, 347);
+            this.OKbutton.Location = new System.Drawing.Point(336, 386);
             this.OKbutton.Name = "OKbutton";
             this.OKbutton.Size = new System.Drawing.Size(75, 23);
             this.OKbutton.TabIndex = 6;
@@ -82,7 +87,7 @@
             // Cancel
             // 
             this.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel.Location = new System.Drawing.Point(389, 347);
+            this.Cancel.Location = new System.Drawing.Point(417, 386);
             this.Cancel.Name = "Cancel";
             this.Cancel.Size = new System.Drawing.Size(75, 23);
             this.Cancel.TabIndex = 7;
@@ -93,10 +98,11 @@
             // groupBox1
             // 
             this.groupBox1.AutoSize = true;
-            this.groupBox1.Controls.Add(this.pathIDAsDumpName);
-            this.groupBox1.Controls.Add(this.pathIDAsImageName);
+            this.groupBox1.Controls.Add(this.groupBox3);
             this.groupBox1.Controls.Add(this.openAfterExport);
             this.groupBox1.Controls.Add(this.restoreExtensionName);
+            this.groupBox1.Controls.Add(this.pathIDAsDumpName);
+            this.groupBox1.Controls.Add(this.pathIDAsImageName);
             this.groupBox1.Controls.Add(this.assetGroupOptions);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.convertAudio);
@@ -104,30 +110,52 @@
             this.groupBox1.Controls.Add(this.converttexture);
             this.groupBox1.Location = new System.Drawing.Point(12, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(252, 327);
+            this.groupBox1.Size = new System.Drawing.Size(265, 367);
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Export";
             // 
-            // pathIDAsDumpName
+            // groupBox3
             // 
-            this.pathIDAsDumpName.AutoSize = true;
-            this.pathIDAsDumpName.Location = new System.Drawing.Point(6, 240);
-            this.pathIDAsDumpName.Name = "pathIDAsDumpName";
-            this.pathIDAsDumpName.Size = new System.Drawing.Size(201, 17);
-            this.pathIDAsDumpName.TabIndex = 12;
-            this.pathIDAsDumpName.Text = "Dump assets with PathID as filename";
-            this.pathIDAsDumpName.UseVisualStyleBackColor = true;
+            this.groupBox3.Controls.Add(this.sepFolderSkills);
+            this.groupBox3.Controls.Add(this.sepFolderPortraits);
+            this.groupBox3.Controls.Add(this.sepFolderAvatars);
+            this.groupBox3.Location = new System.Drawing.Point(6, 256);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(253, 92);
+            this.groupBox3.TabIndex = 13;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Arknights options";
             // 
-            // pathIDAsImageName
+            // sepFolderSkills
             // 
-            this.pathIDAsImageName.AutoSize = true;
-            this.pathIDAsImageName.Location = new System.Drawing.Point(6, 217);
-            this.pathIDAsImageName.Name = "pathIDAsImageName";
-            this.pathIDAsImageName.Size = new System.Drawing.Size(234, 17);
-            this.pathIDAsImageName.TabIndex = 11;
-            this.pathIDAsImageName.Text = "Export image assets with PathID as filename";
-            this.pathIDAsImageName.UseVisualStyleBackColor = true;
+            this.sepFolderSkills.AutoSize = true;
+            this.sepFolderSkills.Location = new System.Drawing.Point(6, 65);
+            this.sepFolderSkills.Name = "sepFolderSkills";
+            this.sepFolderSkills.Size = new System.Drawing.Size(175, 17);
+            this.sepFolderSkills.TabIndex = 15;
+            this.sepFolderSkills.Text = "Export skills to a separate folder";
+            this.sepFolderSkills.UseVisualStyleBackColor = true;
+            // 
+            // sepFolderPortraits
+            // 
+            this.sepFolderPortraits.AutoSize = true;
+            this.sepFolderPortraits.Location = new System.Drawing.Point(6, 42);
+            this.sepFolderPortraits.Name = "sepFolderPortraits";
+            this.sepFolderPortraits.Size = new System.Drawing.Size(190, 17);
+            this.sepFolderPortraits.TabIndex = 14;
+            this.sepFolderPortraits.Text = "Export portraits to a separate folder";
+            this.sepFolderPortraits.UseVisualStyleBackColor = true;
+            // 
+            // sepFolderAvatars
+            // 
+            this.sepFolderAvatars.AutoSize = true;
+            this.sepFolderAvatars.Location = new System.Drawing.Point(6, 19);
+            this.sepFolderAvatars.Name = "sepFolderAvatars";
+            this.sepFolderAvatars.Size = new System.Drawing.Size(188, 17);
+            this.sepFolderAvatars.TabIndex = 13;
+            this.sepFolderAvatars.Text = "Export avatars to a separate folder";
+            this.sepFolderAvatars.UseVisualStyleBackColor = true;
             // 
             // openAfterExport
             // 
@@ -153,6 +181,26 @@
             this.restoreExtensionName.Text = "Restore TextAsset extension name";
             this.restoreExtensionName.UseVisualStyleBackColor = true;
             // 
+            // pathIDAsDumpName
+            // 
+            this.pathIDAsDumpName.AutoSize = true;
+            this.pathIDAsDumpName.Location = new System.Drawing.Point(6, 233);
+            this.pathIDAsDumpName.Name = "pathIDAsDumpName";
+            this.pathIDAsDumpName.Size = new System.Drawing.Size(201, 17);
+            this.pathIDAsDumpName.TabIndex = 12;
+            this.pathIDAsDumpName.Text = "Dump assets with PathID as filename";
+            this.pathIDAsDumpName.UseVisualStyleBackColor = true;
+            // 
+            // pathIDAsImageName
+            // 
+            this.pathIDAsImageName.AutoSize = true;
+            this.pathIDAsImageName.Location = new System.Drawing.Point(6, 210);
+            this.pathIDAsImageName.Name = "pathIDAsImageName";
+            this.pathIDAsImageName.Size = new System.Drawing.Size(234, 17);
+            this.pathIDAsImageName.TabIndex = 11;
+            this.pathIDAsImageName.Text = "Export image assets with PathID as filename";
+            this.pathIDAsImageName.UseVisualStyleBackColor = true;
+            // 
             // assetGroupOptions
             // 
             this.assetGroupOptions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -166,6 +214,7 @@
             this.assetGroupOptions.Name = "assetGroupOptions";
             this.assetGroupOptions.Size = new System.Drawing.Size(149, 21);
             this.assetGroupOptions.TabIndex = 8;
+            this.assetGroupOptions.SelectionChangeCommitted += new System.EventHandler(this.assetGroupOptions_SelectionChangeCommitted);
             // 
             // label6
             // 
@@ -272,9 +321,9 @@
             this.groupBox2.Controls.Add(this.castToBone);
             this.groupBox2.Controls.Add(this.exportAllNodes);
             this.groupBox2.Controls.Add(this.eulerFilter);
-            this.groupBox2.Location = new System.Drawing.Point(264, 13);
+            this.groupBox2.Location = new System.Drawing.Point(277, 13);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(212, 327);
+            this.groupBox2.Size = new System.Drawing.Size(215, 367);
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Fbx";
@@ -477,7 +526,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel;
-            this.ClientSize = new System.Drawing.Size(490, 380);
+            this.ClientSize = new System.Drawing.Size(504, 421);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.Cancel);
@@ -492,6 +541,8 @@
             this.TopMost = true;
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -538,5 +589,9 @@
         private System.Windows.Forms.CheckBox openAfterExport;
         private System.Windows.Forms.CheckBox pathIDAsDumpName;
         private System.Windows.Forms.CheckBox pathIDAsImageName;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.CheckBox sepFolderSkills;
+        private System.Windows.Forms.CheckBox sepFolderPortraits;
+        private System.Windows.Forms.CheckBox sepFolderAvatars;
     }
 }

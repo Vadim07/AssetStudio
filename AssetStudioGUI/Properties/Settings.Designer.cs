@@ -286,5 +286,53 @@ namespace AssetStudioGUI.Properties {
                 this["pathIDAsDumpName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool useAlphaTextureForSprites {
+            get {
+                return ((bool)(this["useAlphaTextureForSprites"]));
+            }
+            set {
+                this["useAlphaTextureForSprites"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool sepFolderAvatars {
+            get {
+                return ((bool)(this["sepFolderAvatars"]));
+            }
+            set {
+                this["sepFolderAvatars"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool sepFolderPortraits {
+            get {
+                return ((bool)(this["sepFolderPortraits"]));
+            }
+            set {
+                this["sepFolderPortraits"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool sepFolderSkills {
+            get {
+                return ((bool)(this["sepFolderSkills"]));
+            }
+            set {
+                this["sepFolderSkills"] = value;
+            }
+        }
     }
 }

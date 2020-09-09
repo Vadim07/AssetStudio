@@ -41,6 +41,7 @@
             this.displayAll = new System.Windows.Forms.ToolStripMenuItem();
             this.enablePreview = new System.Windows.Forms.ToolStripMenuItem();
             this.displayInfo = new System.Windows.Forms.ToolStripMenuItem();
+            this.useAlphaTextureForSprites = new System.Windows.Forms.ToolStripMenuItem();
             this.showExpOpt = new System.Windows.Forms.ToolStripMenuItem();
             this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAllObjectssplitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -115,10 +116,10 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportSelectedAssetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dumpSelectedAssetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAnimatorwithselectedAnimationClipMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToSceneHierarchyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showOriginalFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dumpSelectedAssetsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -206,6 +207,7 @@
             this.displayAll,
             this.enablePreview,
             this.displayInfo,
+            this.useAlphaTextureForSprites,
             this.showExpOpt});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
@@ -215,7 +217,7 @@
             // 
             this.displayAll.CheckOnClick = true;
             this.displayAll.Name = "displayAll";
-            this.displayAll.Size = new System.Drawing.Size(207, 22);
+            this.displayAll.Size = new System.Drawing.Size(220, 22);
             this.displayAll.Text = "Display all assets";
             this.displayAll.ToolTipText = "Check this option will display all types assets. Not extractable assets can expor" +
     "t the RAW file.";
@@ -227,7 +229,7 @@
             this.enablePreview.CheckOnClick = true;
             this.enablePreview.CheckState = System.Windows.Forms.CheckState.Checked;
             this.enablePreview.Name = "enablePreview";
-            this.enablePreview.Size = new System.Drawing.Size(207, 22);
+            this.enablePreview.Size = new System.Drawing.Size(220, 22);
             this.enablePreview.Text = "Enable preview";
             this.enablePreview.ToolTipText = "Toggle the loading and preview of readable assets, such as images, sounds, text, " +
     "etc.\r\nDisable preview if you have performance or compatibility issues.";
@@ -239,16 +241,27 @@
             this.displayInfo.CheckOnClick = true;
             this.displayInfo.CheckState = System.Windows.Forms.CheckState.Checked;
             this.displayInfo.Name = "displayInfo";
-            this.displayInfo.Size = new System.Drawing.Size(207, 22);
+            this.displayInfo.Size = new System.Drawing.Size(220, 22);
             this.displayInfo.Text = "Display asset infromation";
             this.displayInfo.ToolTipText = "Toggle the overlay that shows information about each asset, eg. image size, forma" +
     "t, audio bitrate, etc.";
             this.displayInfo.CheckedChanged += new System.EventHandler(this.displayAssetInfo_Check);
             // 
+            // useAlphaTextureForSprites
+            // 
+            this.useAlphaTextureForSprites.Checked = true;
+            this.useAlphaTextureForSprites.CheckOnClick = true;
+            this.useAlphaTextureForSprites.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useAlphaTextureForSprites.Name = "useAlphaTextureForSprites";
+            this.useAlphaTextureForSprites.Size = new System.Drawing.Size(220, 22);
+            this.useAlphaTextureForSprites.Text = "Use alpha texture for sprites";
+            this.useAlphaTextureForSprites.ToolTipText = "Try to use alpha texture for preview/export sprite assets (if possible).";
+            this.useAlphaTextureForSprites.CheckedChanged += new System.EventHandler(this.useAlphaTextureForSprites_Check);
+            // 
             // showExpOpt
             // 
             this.showExpOpt.Name = "showExpOpt";
-            this.showExpOpt.Size = new System.Drawing.Size(207, 22);
+            this.showExpOpt.Size = new System.Drawing.Size(220, 22);
             this.showExpOpt.Text = "Export options";
             this.showExpOpt.Click += new System.EventHandler(this.showExpOpt_Click);
             // 
@@ -533,7 +546,7 @@
             this.tabPage2.Controls.Add(this.listSearch);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(472, 661);
+            this.tabPage2.Size = new System.Drawing.Size(472, 607);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Asset List";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -552,7 +565,7 @@
             this.assetListView.HideSelection = false;
             this.assetListView.Location = new System.Drawing.Point(0, 20);
             this.assetListView.Name = "assetListView";
-            this.assetListView.Size = new System.Drawing.Size(472, 641);
+            this.assetListView.Size = new System.Drawing.Size(472, 587);
             this.assetListView.TabIndex = 1;
             this.assetListView.UseCompatibleStateImageBehavior = false;
             this.assetListView.View = System.Windows.Forms.View.Details;
@@ -560,6 +573,8 @@
             this.assetListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.assetListView_ColumnClick);
             this.assetListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.selectAsset);
             this.assetListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.assetListView_RetrieveVirtualItem);
+            this.assetListView.SelectedIndexChanged += new System.EventHandler(this.assetListView_SelectedIndexChanged);
+            this.assetListView.VirtualItemsSelectionRangeChanged += new System.Windows.Forms.ListViewVirtualItemsSelectionRangeChangedEventHandler(this.assetListView_VirtualItemsSelectionRangeChanged);
             this.assetListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.assetListView_MouseClick);
             // 
             // columnHeaderName
@@ -604,7 +619,7 @@
             this.tabPage3.Controls.Add(this.classesListView);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(472, 661);
+            this.tabPage3.Size = new System.Drawing.Size(472, 607);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Asset Classes";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -620,7 +635,7 @@
             this.classesListView.Location = new System.Drawing.Point(0, 0);
             this.classesListView.MultiSelect = false;
             this.classesListView.Name = "classesListView";
-            this.classesListView.Size = new System.Drawing.Size(472, 661);
+            this.classesListView.Size = new System.Drawing.Size(472, 607);
             this.classesListView.TabIndex = 0;
             this.classesListView.UseCompatibleStateImageBehavior = false;
             this.classesListView.View = System.Windows.Forms.View.Details;
@@ -893,7 +908,7 @@
             this.tabPage5.Controls.Add(this.dumpTextBox);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(768, 659);
+            this.tabPage5.Size = new System.Drawing.Size(768, 607);
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "Dump";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -906,7 +921,7 @@
             this.dumpTextBox.Name = "dumpTextBox";
             this.dumpTextBox.ReadOnly = true;
             this.dumpTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.dumpTextBox.Size = new System.Drawing.Size(768, 659);
+            this.dumpTextBox.Size = new System.Drawing.Size(768, 607);
             this.dumpTextBox.TabIndex = 0;
             this.dumpTextBox.WordWrap = false;
             // 
@@ -952,7 +967,7 @@
             this.goToSceneHierarchyToolStripMenuItem,
             this.showOriginalFileToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(304, 158);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(304, 136);
             // 
             // copyToolStripMenuItem
             // 
@@ -967,6 +982,13 @@
             this.exportSelectedAssetsToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.exportSelectedAssetsToolStripMenuItem.Text = "Export selected assets";
             this.exportSelectedAssetsToolStripMenuItem.Click += new System.EventHandler(this.exportSelectedAssetsToolStripMenuItem_Click);
+            // 
+            // dumpSelectedAssetsToolStripMenuItem
+            // 
+            this.dumpSelectedAssetsToolStripMenuItem.Name = "dumpSelectedAssetsToolStripMenuItem";
+            this.dumpSelectedAssetsToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
+            this.dumpSelectedAssetsToolStripMenuItem.Text = "Dump selected assets";
+            this.dumpSelectedAssetsToolStripMenuItem.Click += new System.EventHandler(this.dumpSelectedAssetsToolStripMenuItem_Click);
             // 
             // exportAnimatorwithselectedAnimationClipMenuItem
             // 
@@ -991,13 +1013,6 @@
             this.showOriginalFileToolStripMenuItem.Text = "Show original file";
             this.showOriginalFileToolStripMenuItem.Visible = false;
             this.showOriginalFileToolStripMenuItem.Click += new System.EventHandler(this.showOriginalFileToolStripMenuItem_Click);
-            // 
-            // dumpSelectedAssetsToolStripMenuItem
-            // 
-            this.dumpSelectedAssetsToolStripMenuItem.Name = "dumpSelectedAssetsToolStripMenuItem";
-            this.dumpSelectedAssetsToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
-            this.dumpSelectedAssetsToolStripMenuItem.Text = "Dump selected assets";
-            this.dumpSelectedAssetsToolStripMenuItem.Click += new System.EventHandler(this.dumpSelectedAssetsToolStripMenuItem_Click);
             // 
             // AssetStudioGUIForm
             // 
@@ -1140,6 +1155,7 @@
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.TextBox dumpTextBox;
         private System.Windows.Forms.ToolStripMenuItem dumpSelectedAssetsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem useAlphaTextureForSprites;
     }
 }
 

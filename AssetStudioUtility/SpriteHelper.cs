@@ -9,7 +9,7 @@ namespace AssetStudio
 {
     public static class SpriteHelper
     {
-        public static Bitmap GetImage(this Sprite m_Sprite)
+        public static Bitmap GetImage(this Sprite m_Sprite, bool useAlpha)
         {
             if (m_Sprite.m_SpriteAtlas != null && m_Sprite.m_SpriteAtlas.TryGet(out var m_SpriteAtlas))
             {
@@ -20,7 +20,13 @@ namespace AssetStudio
             }
             else
             {
-                if (m_Sprite.m_RD.texture.TryGet(out var m_Texture2D))
+                if (useAlpha && m_Sprite.m_RD.texture.TryGet(out var m_Texture2D) && m_Sprite.m_RD.alphaTexture.TryGet(out var m_TexAlpha2D))
+                {
+                    var tex = CutImage(m_Texture2D, m_Sprite, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.settingsRaw);
+                    var texAlpha = CutImage(m_TexAlpha2D, m_Sprite, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.settingsRaw);
+                    return ApplyMask(tex, texAlpha);
+                }
+                else if (m_Sprite.m_RD.texture.TryGet(out m_Texture2D))
                 {
                     return CutImage(m_Texture2D, m_Sprite, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.settingsRaw);
                 }
@@ -125,6 +131,35 @@ namespace AssetStudio
             }
 
             return null;
+        }
+
+        private static Bitmap ApplyMask(Bitmap imageTex, Bitmap imageMask)
+        {
+            var imageOut = new Bitmap(imageTex.Width, imageTex.Height, PixelFormat.Format32bppArgb);
+            var rect = new Rectangle(0, 0, imageTex.Width, imageTex.Height);
+            var imageMaskData = imageMask.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            var imageTexData = imageTex.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            var imageOutData = imageOut.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            unsafe
+            {
+                for (int y = 0; y < imageTex.Height; y++)
+                {
+                    byte* ptrMask = (byte*)imageMaskData.Scan0 + y * imageMaskData.Stride;
+                    byte* ptrTex = (byte*)imageTexData.Scan0 + y * imageTexData.Stride;
+                    byte* ptrOut = (byte*)imageOutData.Scan0 + y * imageOutData.Stride;
+                    for (int x = 0; x < imageTex.Width; x++)
+                    {
+                        ptrOut[4 * x] = ptrTex[4 * x];          //B
+                        ptrOut[4 * x + 1] = ptrTex[4 * x + 1];  //G
+                        ptrOut[4 * x + 2] = ptrTex[4 * x + 2];  //R
+                        ptrOut[4 * x + 3] = ptrMask[4 * x];     //A (from B in mask)
+                    }
+                }
+            }
+            imageMask.UnlockBits(imageMaskData);
+            imageTex.UnlockBits(imageTexData);
+            imageOut.UnlockBits(imageOutData);
+            return imageOut;
         }
 
         private static Vector2[][] GetTriangles(SpriteRenderData m_RD)
