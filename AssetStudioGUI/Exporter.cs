@@ -274,13 +274,21 @@ namespace AssetStudioGUI
                 exportPath = Path.Combine(exportPath, "Avatars");
             else if (Properties.Settings.Default.sepFolderPortraits && item.Container.Contains("portraits"))
                 exportPath = Path.Combine(exportPath, "Portraits");
-            else if (Properties.Settings.Default.sepFolderSkills && item.Container.Contains("skill_icons_hub"))
-                exportPath = Path.Combine(exportPath, "Character_Skills");
-            else if (Properties.Settings.Default.sepFolderSkills && item.Container.Contains("building/skills"))
-                exportPath = Path.Combine(exportPath, "Building_Skills");
+            else if (Properties.Settings.Default.sepFolderSkills)
+            {
+                if (item.Container.Contains("skill_icons_hub"))
+                    exportPath = Path.Combine(exportPath, "Character Skills");
+                else if (item.Container.Contains("building/skills"))
+                    exportPath = Path.Combine(exportPath, "Building Skills");
+            }
             if (!TryExportFile(exportPath, item, "." + type.ToLower(), out var exportFullPath))
                 return false;
-            var bitmap = ((Sprite)item.Asset).GetImage(Properties.Settings.Default.useAlphaTextureForSprites);
+            Texture2D charAlphaAtlas = null;
+            if (Properties.Settings.Default.useAlphaTextureForCharArtsSprites && (item.Container.Contains("arts/characters") || item.Container.Contains("avg/characters")))
+            {
+                charAlphaAtlas = Studio.TryFindAlphaAtlas(item);
+            }
+            var bitmap = ((Sprite)item.Asset).GetImage(Properties.Settings.Default.useAlphaTextureForSprites, charAlphaAtlas, true);
             if (bitmap != null)
             {
                 if (tga)

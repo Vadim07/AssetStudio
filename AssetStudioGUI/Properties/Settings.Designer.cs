@@ -334,5 +334,17 @@ namespace AssetStudioGUI.Properties {
                 this["sepFolderSkills"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool useAlphaTextureForCharArtsSprites {
+            get {
+                return ((bool)(this["useAlphaTextureForCharArtsSprites"]));
+            }
+            set {
+                this["useAlphaTextureForCharArtsSprites"] = value;
+            }
+        }
     }
 }

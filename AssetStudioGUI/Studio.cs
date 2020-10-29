@@ -643,5 +643,27 @@ namespace AssetStudioGUI
             }
             return str;
         }
+
+        public static Texture2D TryFindAlphaAtlas(AssetItem assetItem)
+        {
+            Sprite m_Sprite = (Sprite)assetItem.Asset;
+            var srcType = "arts/characters";
+            if (m_Sprite.m_RD.alphaTexture.m_PathID == 0)
+            {
+                if (assetItem.Container.Contains("avg/characters"))
+                    srcType = "avg/characters";
+                foreach (var item in exportableAssets)
+                {
+                    if (item.Type == ClassIDType.Texture2D)
+                    {
+                        if (item.Container.Contains(srcType) && item.Container.Contains($"illust_{m_Sprite.m_Name}_material") && item.Text.Contains("[alpha]"))
+                            return (Texture2D)item.Asset;
+                        else if (item.Container.Contains(srcType) && item.Text.Contains($"{m_Sprite.m_Name}[alpha]"))
+                            return (Texture2D)item.Asset;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }

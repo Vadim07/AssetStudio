@@ -95,6 +95,7 @@ namespace AssetStudioGUI
             displayInfo.Checked = Properties.Settings.Default.displayInfo;
             enablePreview.Checked = Properties.Settings.Default.enablePreview;
             useAlphaTextureForSprites.Checked = Properties.Settings.Default.useAlphaTextureForSprites;
+            useAlphaTextureForCharArtsSprites.Checked = Properties.Settings.Default.useAlphaTextureForCharArtsSprites;
             FMODinit();
 
             Logger.Default = new GUILogger(StatusStripUpdate);
@@ -447,6 +448,13 @@ namespace AssetStudioGUI
         private void useAlphaTextureForSprites_Check(object sender, EventArgs e)
         {
             Properties.Settings.Default.useAlphaTextureForSprites = useAlphaTextureForSprites.Checked;
+            Properties.Settings.Default.Save();
+            PreviewAsset(lastSelectedItem);
+        }
+
+        private void useAlphaTextureForCharArtsSprites_Check(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useAlphaTextureForCharArtsSprites = useAlphaTextureForCharArtsSprites.Checked;
             Properties.Settings.Default.Save();
             PreviewAsset(lastSelectedItem);
         }
@@ -1153,13 +1161,19 @@ namespace AssetStudioGUI
             {
                 StatusStripUpdate("Unable to preview this mesh");
             }
-        }
-
-      
+        }      
 
         private void PreviewSprite(AssetItem assetItem, Sprite m_Sprite)
         {
-            var bitmap = m_Sprite.GetImage(Properties.Settings.Default.useAlphaTextureForSprites);
+            Texture2D charAlphaAtlas = null;
+            if (useAlphaTextureForCharArtsSprites.Checked)
+            {
+                if (assetItem.Container.Contains("arts/characters") || assetItem.Container.Contains("avg/characters"))
+                    charAlphaAtlas = TryFindAlphaAtlas(assetItem);
+                else
+                    charAlphaAtlas = null;
+            }
+            var bitmap = m_Sprite.GetImage(Properties.Settings.Default.useAlphaTextureForSprites, charAlphaAtlas);
             if (bitmap != null)
             {
                 assetItem.InfoText = $"Width: {bitmap.Width}\nHeight: {bitmap.Height}\n";

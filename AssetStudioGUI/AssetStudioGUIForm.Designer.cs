@@ -42,6 +42,7 @@
             this.enablePreview = new System.Windows.Forms.ToolStripMenuItem();
             this.displayInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.useAlphaTextureForSprites = new System.Windows.Forms.ToolStripMenuItem();
+            this.useAlphaTextureForCharArtsSprites = new System.Windows.Forms.ToolStripMenuItem();
             this.showExpOpt = new System.Windows.Forms.ToolStripMenuItem();
             this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAllObjectssplitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -208,6 +209,7 @@
             this.enablePreview,
             this.displayInfo,
             this.useAlphaTextureForSprites,
+            this.useAlphaTextureForCharArtsSprites,
             this.showExpOpt});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
@@ -217,7 +219,7 @@
             // 
             this.displayAll.CheckOnClick = true;
             this.displayAll.Name = "displayAll";
-            this.displayAll.Size = new System.Drawing.Size(220, 22);
+            this.displayAll.Size = new System.Drawing.Size(320, 22);
             this.displayAll.Text = "Display all assets";
             this.displayAll.ToolTipText = "Check this option will display all types assets. Not extractable assets can expor" +
     "t the RAW file.";
@@ -229,7 +231,7 @@
             this.enablePreview.CheckOnClick = true;
             this.enablePreview.CheckState = System.Windows.Forms.CheckState.Checked;
             this.enablePreview.Name = "enablePreview";
-            this.enablePreview.Size = new System.Drawing.Size(220, 22);
+            this.enablePreview.Size = new System.Drawing.Size(320, 22);
             this.enablePreview.Text = "Enable preview";
             this.enablePreview.ToolTipText = "Toggle the loading and preview of readable assets, such as images, sounds, text, " +
     "etc.\r\nDisable preview if you have performance or compatibility issues.";
@@ -241,7 +243,7 @@
             this.displayInfo.CheckOnClick = true;
             this.displayInfo.CheckState = System.Windows.Forms.CheckState.Checked;
             this.displayInfo.Name = "displayInfo";
-            this.displayInfo.Size = new System.Drawing.Size(220, 22);
+            this.displayInfo.Size = new System.Drawing.Size(320, 22);
             this.displayInfo.Text = "Display asset infromation";
             this.displayInfo.ToolTipText = "Toggle the overlay that shows information about each asset, eg. image size, forma" +
     "t, audio bitrate, etc.";
@@ -253,15 +255,27 @@
             this.useAlphaTextureForSprites.CheckOnClick = true;
             this.useAlphaTextureForSprites.CheckState = System.Windows.Forms.CheckState.Checked;
             this.useAlphaTextureForSprites.Name = "useAlphaTextureForSprites";
-            this.useAlphaTextureForSprites.Size = new System.Drawing.Size(220, 22);
-            this.useAlphaTextureForSprites.Text = "Use alpha texture for sprites";
+            this.useAlphaTextureForSprites.Size = new System.Drawing.Size(320, 22);
+            this.useAlphaTextureForSprites.Text = "Use alpha texture for sprites with alpha";
             this.useAlphaTextureForSprites.ToolTipText = "Try to use alpha texture for preview/export sprite assets (if possible).";
             this.useAlphaTextureForSprites.CheckedChanged += new System.EventHandler(this.useAlphaTextureForSprites_Check);
+            // 
+            // useAlphaTextureForCharArtsSprites
+            // 
+            this.useAlphaTextureForCharArtsSprites.Checked = true;
+            this.useAlphaTextureForCharArtsSprites.CheckOnClick = true;
+            this.useAlphaTextureForCharArtsSprites.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useAlphaTextureForCharArtsSprites.Name = "useAlphaTextureForCharArtsSprites";
+            this.useAlphaTextureForCharArtsSprites.Size = new System.Drawing.Size(320, 22);
+            this.useAlphaTextureForCharArtsSprites.Text = "Use alpha texture for sprites with character arts";
+            this.useAlphaTextureForCharArtsSprites.ToolTipText = "Try to use alpha texture for preview/export sprite assets with character arts (fo" +
+    "r Arknights).";
+            this.useAlphaTextureForCharArtsSprites.CheckedChanged += new System.EventHandler(this.useAlphaTextureForCharArtsSprites_Check);
             // 
             // showExpOpt
             // 
             this.showExpOpt.Name = "showExpOpt";
-            this.showExpOpt.Size = new System.Drawing.Size(220, 22);
+            this.showExpOpt.Size = new System.Drawing.Size(320, 22);
             this.showExpOpt.Text = "Export options";
             this.showExpOpt.Click += new System.EventHandler(this.showExpOpt_Click);
             // 
@@ -510,7 +524,7 @@
             this.tabPage1.Controls.Add(this.treeSearch);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(472, 607);
+            this.tabPage1.Size = new System.Drawing.Size(472, 664);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Scene Hierarchy";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -522,7 +536,7 @@
             this.sceneTreeView.HideSelection = false;
             this.sceneTreeView.Location = new System.Drawing.Point(0, 20);
             this.sceneTreeView.Name = "sceneTreeView";
-            this.sceneTreeView.Size = new System.Drawing.Size(472, 587);
+            this.sceneTreeView.Size = new System.Drawing.Size(472, 644);
             this.sceneTreeView.TabIndex = 1;
             this.sceneTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.sceneTreeView_AfterCheck);
             // 
@@ -619,7 +633,7 @@
             this.tabPage3.Controls.Add(this.classesListView);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(472, 607);
+            this.tabPage3.Size = new System.Drawing.Size(472, 664);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Asset Classes";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -635,7 +649,7 @@
             this.classesListView.Location = new System.Drawing.Point(0, 0);
             this.classesListView.MultiSelect = false;
             this.classesListView.Name = "classesListView";
-            this.classesListView.Size = new System.Drawing.Size(472, 607);
+            this.classesListView.Size = new System.Drawing.Size(472, 664);
             this.classesListView.TabIndex = 0;
             this.classesListView.UseCompatibleStateImageBehavior = false;
             this.classesListView.View = System.Windows.Forms.View.Details;
@@ -908,7 +922,7 @@
             this.tabPage5.Controls.Add(this.dumpTextBox);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(768, 607);
+            this.tabPage5.Size = new System.Drawing.Size(768, 664);
             this.tabPage5.TabIndex = 1;
             this.tabPage5.Text = "Dump";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -921,7 +935,7 @@
             this.dumpTextBox.Name = "dumpTextBox";
             this.dumpTextBox.ReadOnly = true;
             this.dumpTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.dumpTextBox.Size = new System.Drawing.Size(768, 607);
+            this.dumpTextBox.Size = new System.Drawing.Size(768, 664);
             this.dumpTextBox.TabIndex = 0;
             this.dumpTextBox.WordWrap = false;
             // 
@@ -1156,6 +1170,7 @@
         private System.Windows.Forms.TextBox dumpTextBox;
         private System.Windows.Forms.ToolStripMenuItem dumpSelectedAssetsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem useAlphaTextureForSprites;
+        private System.Windows.Forms.ToolStripMenuItem useAlphaTextureForCharArtsSprites;
     }
 }
 

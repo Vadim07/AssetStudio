@@ -9,7 +9,7 @@ namespace AssetStudio
 {
     public static class SpriteHelper
     {
-        public static Bitmap GetImage(this Sprite m_Sprite, bool useAlpha)
+        public static Bitmap GetImage(this Sprite m_Sprite, bool useAlpha, Texture2D chrAlphaTex = null, bool hq = false)
         {
             if (m_Sprite.m_SpriteAtlas != null && m_Sprite.m_SpriteAtlas.TryGet(out var m_SpriteAtlas))
             {
@@ -20,7 +20,18 @@ namespace AssetStudio
             }
             else
             {
-                if (useAlpha && m_Sprite.m_RD.texture.TryGet(out var m_Texture2D) && m_Sprite.m_RD.alphaTexture.TryGet(out var m_TexAlpha2D))
+                if (m_Sprite.m_RD.texture.TryGet(out var m_Texture2D) && chrAlphaTex != null)
+                {
+                    var bitmapTex = m_Texture2D.ConvertToBitmap(true);
+                    using (bitmapTex)
+                    {
+                        var bitmapAlpha = chrAlphaTex.ConvertToBitmap(true);
+                        if (bitmapAlpha.Size != bitmapTex.Size)
+                            bitmapAlpha = Resize(bitmapAlpha, new Rectangle(0, 0, bitmapTex.Width, bitmapTex.Height), hq);
+                        return ApplyMask(bitmapTex, bitmapAlpha);
+                    }
+                }
+                else if (useAlpha && m_Sprite.m_RD.texture.TryGet(out m_Texture2D) && m_Sprite.m_RD.alphaTexture.TryGet(out var m_TexAlpha2D))
                 {
                     var tex = CutImage(m_Texture2D, m_Sprite, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.settingsRaw);
                     var texAlpha = CutImage(m_TexAlpha2D, m_Sprite, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.settingsRaw);
@@ -159,6 +170,24 @@ namespace AssetStudio
             imageMask.UnlockBits(imageMaskData);
             imageTex.UnlockBits(imageTexData);
             imageOut.UnlockBits(imageOutData);
+            return imageOut;
+        }
+
+        private static Bitmap Resize(Bitmap image, Rectangle dstRect, bool hq)
+        {
+            var quality = (CQ:CompositingQuality.HighSpeed, IM:InterpolationMode.NearestNeighbor, SM:SmoothingMode.None);
+            if (hq)
+                quality = (CQ:CompositingQuality.HighQuality, IM:InterpolationMode.HighQualityBicubic, SM:SmoothingMode.HighQuality);
+            var imageOut = new Bitmap(dstRect.Width, dstRect.Height, PixelFormat.Format32bppArgb);
+            using (var graphic = Graphics.FromImage(imageOut))
+            {
+                graphic.CompositingMode = CompositingMode.SourceCopy;
+                graphic.CompositingQuality = quality.CQ;
+                graphic.InterpolationMode = quality.IM;
+                graphic.SmoothingMode = quality.SM;
+                var srcRect = new Rectangle(0, 0, image.Width, image.Height);
+                graphic.DrawImage(image, dstRect, srcRect, GraphicsUnit.Pixel);
+            }
             return imageOut;
         }
 
