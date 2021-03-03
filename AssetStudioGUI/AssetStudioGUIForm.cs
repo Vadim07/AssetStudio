@@ -94,8 +94,6 @@ namespace AssetStudioGUI
             displayAll.Checked = Properties.Settings.Default.displayAll;
             displayInfo.Checked = Properties.Settings.Default.displayInfo;
             enablePreview.Checked = Properties.Settings.Default.enablePreview;
-            useAlphaTextureForSprites.Checked = Properties.Settings.Default.useAlphaTextureForSprites;
-            useAlphaTextureForCharArtsSprites.Checked = Properties.Settings.Default.useAlphaTextureForCharArtsSprites;
             FMODinit();
 
             Logger.Default = new GUILogger(StatusStripUpdate);
@@ -445,20 +443,6 @@ namespace AssetStudioGUI
             Properties.Settings.Default.Save();
         }
 
-        private void useAlphaTextureForSprites_Check(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.useAlphaTextureForSprites = useAlphaTextureForSprites.Checked;
-            Properties.Settings.Default.Save();
-            PreviewAsset(lastSelectedItem);
-        }
-
-        private void useAlphaTextureForCharArtsSprites_Check(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.useAlphaTextureForCharArtsSprites = useAlphaTextureForCharArtsSprites.Checked;
-            Properties.Settings.Default.Save();
-            PreviewAsset(lastSelectedItem);
-        }
-
         private void showExpOpt_Click(object sender, EventArgs e)
         {
             var exportOpt = new ExportOptions();
@@ -637,11 +621,10 @@ namespace AssetStudioGUI
             assetListView.EndUpdate();
         }
 
-        private void previewPanelReset() 
+        private void selectAsset(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             previewPanel.BackgroundImage = Properties.Resources.preview;
             previewPanel.BackgroundImageLayout = ImageLayout.Center;
-
             classTextBox.Visible = false;
             assetInfoLabel.Visible = false;
             assetInfoLabel.Text = null;
@@ -649,15 +632,9 @@ namespace AssetStudioGUI
             fontPreviewBox.Visible = false;
             FMODpanel.Visible = false;
             glControl1.Visible = false;
-            dumpTextBox.Text = null;
-
             StatusStripUpdate("");
-            FMODreset();
-        }
 
-        private void selectAsset(object sender, ListViewItemSelectionChangedEventArgs e)
-        {
-            previewPanelReset();
+            FMODreset();
 
             lastSelectedItem = (AssetItem)e.Item;
 
@@ -681,13 +658,16 @@ namespace AssetStudioGUI
 
         private void classesListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
+            classTextBox.Visible = true;
+            assetInfoLabel.Visible = false;
+            assetInfoLabel.Text = null;
+            textPreviewBox.Visible = false;
+            fontPreviewBox.Visible = false;
+            FMODpanel.Visible = false;
+            glControl1.Visible = false;
+            StatusStripUpdate("");
             if (e.IsSelected)
             {
-                if (!classTextBox.Visible)
-                {
-                    previewPanelReset();
-                    classTextBox.Visible = true;
-                }
                 classTextBox.Text = ((TypeTreeItem)classesListView.SelectedItems[0]).ToString();
             }
         }
@@ -919,10 +899,15 @@ namespace AssetStudioGUI
             var result = system.createSound(m_AudioData, FMOD.MODE.OPENMEMORY | loopMode, ref exinfo, out sound);
             if (ERRCHECK(result)) return;
 
-            result = sound.getSubSound(0, out var subsound);
-            if (result == FMOD.RESULT.OK)
+            sound.getNumSubSounds(out var numsubsounds);
+
+            if (numsubsounds > 0)
             {
-                sound = subsound;
+                result = sound.getSubSound(0, out var subsound);
+                if (result == FMOD.RESULT.OK)
+                {
+                    sound = subsound;
+                }
             }
 
             result = sound.getLength(out FMODlenms, FMOD.TIMEUNIT.MS);
@@ -1161,19 +1146,11 @@ namespace AssetStudioGUI
             {
                 StatusStripUpdate("Unable to preview this mesh");
             }
-        }      
+        }
 
         private void PreviewSprite(AssetItem assetItem, Sprite m_Sprite)
         {
-            Texture2D charAlphaAtlas = null;
-            if (useAlphaTextureForCharArtsSprites.Checked)
-            {
-                if (assetItem.Container.Contains("arts/characters") || assetItem.Container.Contains("avg/characters"))
-                    charAlphaAtlas = TryFindAlphaAtlas(assetItem);
-                else
-                    charAlphaAtlas = null;
-            }
-            var bitmap = m_Sprite.GetImage(Properties.Settings.Default.useAlphaTextureForSprites, charAlphaAtlas);
+            var bitmap = m_Sprite.GetImage();
             if (bitmap != null)
             {
                 assetItem.InfoText = $"Width: {bitmap.Width}\nHeight: {bitmap.Height}\n";
@@ -1239,21 +1216,27 @@ namespace AssetStudioGUI
             assetListView.Items.Clear();
             classesListView.Items.Clear();
             classesListView.Groups.Clear();
+            previewPanel.BackgroundImage = Properties.Resources.preview;
             imageTexture?.Dispose();
-            previewPanelReset();
+            previewPanel.BackgroundImageLayout = ImageLayout.Center;
+            assetInfoLabel.Visible = false;
+            assetInfoLabel.Text = null;
+            textPreviewBox.Visible = false;
+            fontPreviewBox.Visible = false;
+            glControl1.Visible = false;
             lastSelectedItem = null;
             sortColumn = -1;
             reverseSort = false;
             enableFiltering = false;
             listSearch.Text = " Filter ";
-            if (tabControl1.SelectedIndex == 1)
-                assetListView.Select();
 
             var count = filterTypeToolStripMenuItem.DropDownItems.Count;
             for (var i = 1; i < count; i++)
             {
                 filterTypeToolStripMenuItem.DropDownItems.RemoveAt(1);
             }
+
+            FMODreset();
         }
 
         private void assetListView_MouseClick(object sender, MouseEventArgs e)
@@ -1283,18 +1266,6 @@ namespace AssetStudioGUI
             }
         }
 
-        private void assetListView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (assetListView.SelectedIndices.Count > 1)
-                StatusStripUpdate($"Selected {assetListView.SelectedIndices.Count} assets.");
-        }
-
-        private void assetListView_VirtualItemsSelectionRangeChanged(object sender, ListViewVirtualItemsSelectionRangeChangedEventArgs e)
-        {
-            if (assetListView.SelectedIndices.Count > 1)
-                StatusStripUpdate($"Selected {assetListView.SelectedIndices.Count} assets.");
-        }
-
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Clipboard.SetDataObject(tempClipboard);
@@ -1303,11 +1274,6 @@ namespace AssetStudioGUI
         private void exportSelectedAssetsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExportAssets(2, ExportType.Convert);
-        }
-
-        private void dumpSelectedAssetsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ExportAssets(2, ExportType.Dump);
         }
 
         private void showOriginalFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1581,7 +1547,7 @@ namespace AssetStudioGUI
                 Application.Exit();
             }
 
-            result = system.init(1, FMOD.INITFLAGS.NORMAL, IntPtr.Zero);
+            result = system.init(2, FMOD.INITFLAGS.NORMAL, IntPtr.Zero);
             if (ERRCHECK(result)) { return; }
 
             result = system.getMasterSoundGroup(out masterSoundGroup);
@@ -1995,7 +1961,7 @@ namespace AssetStudioGUI
 
         private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl2.SelectedIndex == 1 && lastSelectedItem != null && tabControl1.SelectedIndex != 2 && !classesListView.SelectedItems.Contains(lastSelectedItem))
+            if (tabControl2.SelectedIndex == 1 && lastSelectedItem != null)
             {
                 dumpTextBox.Text = DumpAsset(lastSelectedItem.Asset);
             }
