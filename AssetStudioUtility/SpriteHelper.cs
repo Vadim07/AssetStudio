@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -9,7 +10,7 @@ namespace AssetStudio
 {
     public static class SpriteHelper
     {
-        public static Bitmap GetImage(this Sprite m_Sprite, bool useAlpha, Texture2D chrAlphaTex = null, bool hq = false)
+        public static Bitmap GetImage(this Sprite m_Sprite, bool useSelfAlpha, Texture2D chrAlphaTex = null, bool hq = false, OrderedDictionary faceData = null)
         {
             if (m_Sprite.m_SpriteAtlas != null && m_Sprite.m_SpriteAtlas.TryGet(out var m_SpriteAtlas))
             {
@@ -20,29 +21,49 @@ namespace AssetStudio
             }
             else
             {
-                if (m_Sprite.m_RD.texture.TryGet(out var m_Texture2D) && chrAlphaTex != null)
+                if (m_Sprite.m_RD.texture.TryGet(out var m_Texture2D) && chrAlphaTex != null) //Character art with external alpha path
                 {
                     var bitmapTex = m_Texture2D.ConvertToBitmap(true);
-                    using (bitmapTex)
+                    var bitmapAlpha = chrAlphaTex.ConvertToBitmap(true);
+                    if (faceData != null)
                     {
-                        var bitmapAlpha = chrAlphaTex.ConvertToBitmap(true);
-                        if (bitmapAlpha.Size != bitmapTex.Size)
-                            bitmapAlpha = Resize(bitmapAlpha, new Rectangle(0, 0, bitmapTex.Width, bitmapTex.Height), hq);
-                        return ApplyMask(bitmapTex, bitmapAlpha);
+                        var faceAlphaTex = (Texture2D)faceData["alphaTex"];
+                        var faceRect = (RectangleF)faceData["faceRect"];
+                        var faceBitmapAlpha = faceAlphaTex.ConvertToBitmap(true);
+                        var isFace = (bool)faceData["isFace"];
+                        if (isFace)
+                        {
+                            var faceTex = bitmapTex;
+                            bitmapTex = ((Texture2D)faceData["fullTex"]).ConvertToBitmap(true);
+                            bitmapTex = MergeImage(bitmapTex, faceTex, faceRect);
+                        }
+                        bitmapAlpha = MergeImage(bitmapAlpha, faceBitmapAlpha, faceRect);
                     }
+                    if (bitmapAlpha.Size != bitmapTex.Size)
+                        bitmapAlpha = Resize(bitmapAlpha, new Rectangle(0, 0, bitmapTex.Width, bitmapTex.Height), hq);
+                    return ApplyMask(bitmapTex, bitmapAlpha);
                 }
-                else if (useAlpha && m_Sprite.m_RD.texture.TryGet(out m_Texture2D) && m_Sprite.m_RD.alphaTexture.TryGet(out var m_TexAlpha2D))
+                else if (useSelfAlpha && m_Sprite.m_RD.texture.TryGet(out m_Texture2D) && m_Sprite.m_RD.alphaTexture.TryGet(out var m_TexAlpha2D)) //Sprite with internal alpha path
                 {
                     var tex = CutImage(m_Texture2D, m_Sprite, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.settingsRaw);
                     var texAlpha = CutImage(m_TexAlpha2D, m_Sprite, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.settingsRaw);
                     return ApplyMask(tex, texAlpha);
                 }
-                else if (m_Sprite.m_RD.texture.TryGet(out m_Texture2D))
+                else if (m_Sprite.m_RD.texture.TryGet(out m_Texture2D)) //Sprite without alpha
                 {
                     return CutImage(m_Texture2D, m_Sprite, m_Sprite.m_RD.textureRect, m_Sprite.m_RD.textureRectOffset, m_Sprite.m_RD.settingsRaw);
                 }
             }
             return null;
+        }
+
+        private static Bitmap MergeImage(Bitmap source, Bitmap target, RectangleF coord)
+        {
+            using (var graphic = Graphics.FromImage(source))
+            {
+                graphic.DrawImage(target, coord);
+            }
+            return source;
         }
 
         private static Bitmap CutImage(Texture2D m_Texture2D, Sprite m_Sprite, Rectf textureRect, Vector2 textureRectOffset, SpriteSettings settingsRaw)
@@ -177,9 +198,9 @@ namespace AssetStudio
 
         private static Bitmap Resize(Bitmap image, Rectangle dstRect, bool hq)
         {
-            var quality = (CQ:CompositingQuality.HighSpeed, IM:InterpolationMode.NearestNeighbor, SM:SmoothingMode.None);
+            var quality = (CQ: CompositingQuality.HighSpeed, IM: InterpolationMode.NearestNeighbor, SM: SmoothingMode.None);
             if (hq)
-                quality = (CQ:CompositingQuality.HighQuality, IM:InterpolationMode.HighQualityBicubic, SM:SmoothingMode.HighQuality);
+                quality = (CQ: CompositingQuality.HighQuality, IM: InterpolationMode.HighQualityBicubic, SM: SmoothingMode.HighQuality);
             var imageOut = new Bitmap(dstRect.Width, dstRect.Height, PixelFormat.Format32bppArgb);
             using (var graphic = Graphics.FromImage(imageOut))
             {
@@ -230,7 +251,6 @@ namespace AssetStudio
                                 vertices[v] = vertexReader.ReadVector3();
                                 vertexReader.BaseStream.Position += m_Stream.stride - 12;
                             }
-
                             indexReader.BaseStream.Position = subMesh.firstByte;
 
                             var triangleCount = subMesh.indexCount / 3u;

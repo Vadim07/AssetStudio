@@ -290,12 +290,12 @@ namespace AssetStudioGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool useAlphaTextureForSprites {
+        public bool useInternalAlphaTexForSprites {
             get {
-                return ((bool)(this["useAlphaTextureForSprites"]));
+                return ((bool)(this["useInternalAlphaTexForSprites"]));
             }
             set {
-                this["useAlphaTextureForSprites"] = value;
+                this["useInternalAlphaTexForSprites"] = value;
             }
         }
         
@@ -338,12 +338,12 @@ namespace AssetStudioGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool useAlphaTextureForCharArtsSprites {
+        public bool useExternalAlphaTexForSprites {
             get {
-                return ((bool)(this["useAlphaTextureForCharArtsSprites"]));
+                return ((bool)(this["useExternalAlphaTexForSprites"]));
             }
             set {
-                this["useAlphaTextureForCharArtsSprites"] = value;
+                this["useExternalAlphaTexForSprites"] = value;
             }
         }
     }

@@ -270,6 +270,7 @@ namespace AssetStudioGUI
                     tga = true;
                     break;
             }
+
             if (Properties.Settings.Default.sepFolderAvatars && item.Container.Contains("charavatars"))
                 exportPath = Path.Combine(exportPath, "Avatars");
             else if (Properties.Settings.Default.sepFolderPortraits && item.Container.Contains("portraits"))
@@ -283,12 +284,34 @@ namespace AssetStudioGUI
             }
             if (!TryExportFile(exportPath, item, "." + type.ToLower(), out var exportFullPath))
                 return false;
+
             Texture2D charAlphaAtlas = null;
-            if (Properties.Settings.Default.useAlphaTextureForCharArtsSprites && (item.Container.Contains("arts/characters") || item.Container.Contains("avg/characters")))
+            System.Collections.Specialized.OrderedDictionary charFaceData = null;
+            bool useExternalAlpha = Properties.Settings.Default.useExternalAlphaTexForSprites;
+            bool useInternalAlpha = Properties.Settings.Default.useInternalAlphaTexForSprites;
+            if (useExternalAlpha)
             {
-                charAlphaAtlas = Studio.TryFindAlphaAtlas(item);
+                if (item.Container.Contains("arts/characters"))
+                    charAlphaAtlas = Studio.TryFindAlphaAtlas(item);
+                else if (item.Container.Contains("avg/characters"))
+                {
+                    bool isFace = false;
+                    var avgHub = Studio.GetAvgSpriteHub(item);
+                    charFaceData = Studio.GetFaceSpriteData(avgHub, item.m_PathID);
+                    if (charFaceData != null)
+                        isFace = (bool)charFaceData["isFace"];
+                    if (isFace)
+                    {
+                        var fullName = Path.GetFileNameWithoutExtension(item.Container);
+                        exportFullPath = Path.Combine(exportPath, fullName + "#" + item.Text + "." + type.ToLower());
+                    }
+                    charAlphaAtlas = Studio.TryFindAlphaAtlas(item, avgCharSpiteHub: avgHub, isFace: isFace);
+                }
+                else
+                    charAlphaAtlas = null;
             }
-            var bitmap = ((Sprite)item.Asset).GetImage(Properties.Settings.Default.useAlphaTextureForSprites, charAlphaAtlas, true);
+
+            var bitmap = ((Sprite)item.Asset).GetImage(useInternalAlpha, hq: true, chrAlphaTex: charAlphaAtlas, faceData: charFaceData);
             if (bitmap != null)
             {
                 if (tga)

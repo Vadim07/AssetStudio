@@ -4,6 +4,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -94,6 +95,8 @@ namespace AssetStudioGUI
             displayAll.Checked = Properties.Settings.Default.displayAll;
             displayInfo.Checked = Properties.Settings.Default.displayInfo;
             enablePreview.Checked = Properties.Settings.Default.enablePreview;
+            useInternalAlphaTexForSprites.Checked = Properties.Settings.Default.useInternalAlphaTexForSprites;
+            useExternalAlphaTexForSprites.Checked = Properties.Settings.Default.useExternalAlphaTexForSprites;
             FMODinit();
 
             Logger.Default = new GUILogger(StatusStripUpdate);
@@ -443,6 +446,20 @@ namespace AssetStudioGUI
             Properties.Settings.Default.Save();
         }
 
+        private void useInternalAlphaTexForSprites_Check(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useInternalAlphaTexForSprites = useInternalAlphaTexForSprites.Checked;
+            Properties.Settings.Default.Save();
+            PreviewAsset(lastSelectedItem);
+        }
+
+        private void useExternalAlphaTexForSprites_Check(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useExternalAlphaTexForSprites = useExternalAlphaTexForSprites.Checked;
+            Properties.Settings.Default.Save();
+            PreviewAsset(lastSelectedItem);
+        }
+
         private void showExpOpt_Click(object sender, EventArgs e)
         {
             var exportOpt = new ExportOptions();
@@ -621,10 +638,11 @@ namespace AssetStudioGUI
             assetListView.EndUpdate();
         }
 
-        private void selectAsset(object sender, ListViewItemSelectionChangedEventArgs e)
+        private void previewPanelReset() 
         {
             previewPanel.BackgroundImage = Properties.Resources.preview;
             previewPanel.BackgroundImageLayout = ImageLayout.Center;
+
             classTextBox.Visible = false;
             assetInfoLabel.Visible = false;
             assetInfoLabel.Text = null;
@@ -632,9 +650,15 @@ namespace AssetStudioGUI
             fontPreviewBox.Visible = false;
             FMODpanel.Visible = false;
             glControl1.Visible = false;
-            StatusStripUpdate("");
+            dumpTextBox.Text = null;
 
+            StatusStripUpdate("");
             FMODreset();
+        }
+
+        private void selectAsset(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            previewPanelReset();
 
             lastSelectedItem = (AssetItem)e.Item;
 
@@ -658,14 +682,8 @@ namespace AssetStudioGUI
 
         private void classesListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
+            previewPanelReset();
             classTextBox.Visible = true;
-            assetInfoLabel.Visible = false;
-            assetInfoLabel.Text = null;
-            textPreviewBox.Visible = false;
-            fontPreviewBox.Visible = false;
-            FMODpanel.Visible = false;
-            glControl1.Visible = false;
-            StatusStripUpdate("");
             if (e.IsSelected)
             {
                 classTextBox.Text = ((TypeTreeItem)classesListView.SelectedItems[0]).ToString();
@@ -1146,11 +1164,31 @@ namespace AssetStudioGUI
             {
                 StatusStripUpdate("Unable to preview this mesh");
             }
-        }
+        }      
 
         private void PreviewSprite(AssetItem assetItem, Sprite m_Sprite)
         {
-            var bitmap = m_Sprite.GetImage();
+            Texture2D charAlphaAtlas = null;
+            OrderedDictionary charFaceData = null;
+            bool useSpriteSelfAlpha = Properties.Settings.Default.useInternalAlphaTexForSprites;
+            bool useSpriteArtsAlpha = useExternalAlphaTexForSprites.Checked;
+            if (useSpriteArtsAlpha)
+            {
+                if (assetItem.Container.Contains("arts/characters"))
+                    charAlphaAtlas = TryFindAlphaAtlas(assetItem);
+                else if (assetItem.Container.Contains("avg/characters"))
+                {
+                    bool isFace = false;
+                    var avgHub = GetAvgSpriteHub(assetItem);
+                    charFaceData = GetFaceSpriteData(avgHub, assetItem.m_PathID);
+                    if (charFaceData != null)
+                        isFace = (bool)charFaceData["isFace"];
+                    charAlphaAtlas = TryFindAlphaAtlas(assetItem, avgCharSpiteHub: avgHub, isFace: isFace);
+                }
+                else
+                    charAlphaAtlas = null;
+            }
+            var bitmap = m_Sprite.GetImage(useSpriteSelfAlpha, chrAlphaTex: charAlphaAtlas, faceData: charFaceData);
             if (bitmap != null)
             {
                 assetItem.InfoText = $"Width: {bitmap.Width}\nHeight: {bitmap.Height}\n";
@@ -1216,27 +1254,21 @@ namespace AssetStudioGUI
             assetListView.Items.Clear();
             classesListView.Items.Clear();
             classesListView.Groups.Clear();
-            previewPanel.BackgroundImage = Properties.Resources.preview;
             imageTexture?.Dispose();
-            previewPanel.BackgroundImageLayout = ImageLayout.Center;
-            assetInfoLabel.Visible = false;
-            assetInfoLabel.Text = null;
-            textPreviewBox.Visible = false;
-            fontPreviewBox.Visible = false;
-            glControl1.Visible = false;
+            previewPanelReset();
             lastSelectedItem = null;
             sortColumn = -1;
             reverseSort = false;
             enableFiltering = false;
             listSearch.Text = " Filter ";
+            if (tabControl1.SelectedIndex == 1)
+                assetListView.Select();
 
             var count = filterTypeToolStripMenuItem.DropDownItems.Count;
             for (var i = 1; i < count; i++)
             {
                 filterTypeToolStripMenuItem.DropDownItems.RemoveAt(1);
             }
-
-            FMODreset();
         }
 
         private void assetListView_MouseClick(object sender, MouseEventArgs e)
@@ -1266,6 +1298,18 @@ namespace AssetStudioGUI
             }
         }
 
+        private void assetListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (assetListView.SelectedIndices.Count > 1)
+                StatusStripUpdate($"Selected {assetListView.SelectedIndices.Count} assets.");
+        }
+
+        private void assetListView_VirtualItemsSelectionRangeChanged(object sender, ListViewVirtualItemsSelectionRangeChangedEventArgs e)
+        {
+            if (assetListView.SelectedIndices.Count > 1)
+                StatusStripUpdate($"Selected {assetListView.SelectedIndices.Count} assets.");
+        }
+
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Clipboard.SetDataObject(tempClipboard);
@@ -1274,6 +1318,11 @@ namespace AssetStudioGUI
         private void exportSelectedAssetsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ExportAssets(2, ExportType.Convert);
+        }
+
+        private void dumpSelectedAssetsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportAssets(2, ExportType.Dump);
         }
 
         private void showOriginalFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1961,7 +2010,7 @@ namespace AssetStudioGUI
 
         private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl2.SelectedIndex == 1 && lastSelectedItem != null)
+            if (tabControl2.SelectedIndex == 1 && lastSelectedItem != null && tabControl1.SelectedIndex != 2 && !classesListView.SelectedItems.Contains(lastSelectedItem))
             {
                 dumpTextBox.Text = DumpAsset(lastSelectedItem.Asset);
             }

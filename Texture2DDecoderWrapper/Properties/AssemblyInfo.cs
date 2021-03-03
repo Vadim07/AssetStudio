@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Texture2DDecoder")]
-[assembly: AssemblyCopyright("Copyright © Perfare 2020; Copyright © hozuki 2020")]
+[assembly: AssemblyCopyright("Copyright © Perfare 2021; Copyright © hozuki 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -15,5 +15,5 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("2afce830-b463-49b3-a026-877e5eafc0a4")]
 
-[assembly: AssemblyVersion("0.15.20.3")]
-[assembly: AssemblyFileVersion("0.15.20.3")]
+[assembly: AssemblyVersion("0.15.20.4")]
+[assembly: AssemblyFileVersion("0.15.20.4")]

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("AssetStudioFBXWrapper")]
-[assembly: AssemblyCopyright("Copyright © Perfare 2018-2020; Copyright © hozuki 2020")]
+[assembly: AssemblyCopyright("Copyright © Perfare 2018-2021; Copyright © hozuki 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -15,5 +15,5 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("bd76e63f-1517-47fa-8233-33e853a3acee")]
 
-[assembly: AssemblyVersion("0.15.20.3")]
-[assembly: AssemblyFileVersion("0.15.20.3")]
+[assembly: AssemblyVersion("0.15.20.4")]
+[assembly: AssemblyFileVersion("0.15.20.4")]

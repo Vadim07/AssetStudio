@@ -68,7 +68,7 @@
     <Setting Name="pathIDAsDumpName" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="useAlphaTextureForSprites" Type="System.Boolean" Scope="User">
+    <Setting Name="useInternalAlphaTexForSprites" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="sepFolderAvatars" Type="System.Boolean" Scope="User">
@@ -80,7 +80,7 @@
     <Setting Name="sepFolderSkills" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="useAlphaTextureForCharArtsSprites" Type="System.Boolean" Scope="User">
+    <Setting Name="useExternalAlphaTexForSprites" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>

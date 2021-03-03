@@ -1,5 +1,7 @@
 ﻿using AssetStudio;
 using System;
+using System.Collections;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -644,24 +646,110 @@ namespace AssetStudioGUI
             return str;
         }
 
-        public static Texture2D TryFindAlphaAtlas(AssetItem assetItem)
+        public static OrderedDictionary GetAvgSpriteHub(AssetItem assetItem)
+        {
+            var avgHubItem = exportableAssets.Find(
+                x => x.Type == ClassIDType.MonoBehaviour &&
+                x.Container == assetItem.Container &&
+                x.Text.IndexOf("AVGCharacterSpriteHub", StringComparison.OrdinalIgnoreCase) >= 0);
+            OrderedDictionary avgCharSpiteHub = ((MonoBehaviour)avgHubItem.Asset).ToType();
+
+            return avgCharSpiteHub;
+        }
+
+        public static OrderedDictionary GetFaceSpriteData(OrderedDictionary avgCharSpiteHub, long itemID)
+        {
+            if (avgCharSpiteHub.Contains("FaceSize"))
+            {
+                var faceSize_val = ((OrderedDictionary)avgCharSpiteHub["FaceSize"]).Values.Cast<object>().ToList();
+                var facePos_val = ((OrderedDictionary)avgCharSpiteHub["FacePos"]).Values.Cast<object>().ToList();
+                var faceSize = (width: (float)faceSize_val[0], height: (float)faceSize_val[1]);
+                var facePos = (x: (float)facePos_val[0], y: (float)facePos_val[1]);
+                if (facePos.x > 0 && facePos.y > 0)
+                {
+                    var sprites = ((IEnumerable)avgCharSpiteHub["sprites"]).Cast<object>().ToList();
+                    if (sprites.Count > 0)
+                    {
+                        object sprite_obj = null;
+                        if (sprites.Count > 1)
+                            sprite_obj = sprites[1];
+                        else
+                            sprite_obj = sprites[0];
+                        var fullSpriteData = (OrderedDictionary)sprites.Last();
+                        var fullSprite = (OrderedDictionary)fullSpriteData["sprite"];
+                        var fullSpriteID = (long)fullSprite["m_PathID"];
+                        var fullSpriteItem = (Sprite)exportableAssets.Find(x => x.m_PathID == fullSpriteID).Asset;
+                        var fullTexID = fullSpriteItem.m_RD.texture.m_PathID;
+                        var sprite_data = (OrderedDictionary)sprite_obj;
+                        var alphaSprite = (OrderedDictionary)sprite_data["alphaTex"];
+                        var alphaID = (long)alphaSprite["m_PathID"];
+                        var faceAlphaTex = exportableAssets.Find(x => x.m_PathID == alphaID);
+                        var fullTex = exportableAssets.Find(x => x.m_PathID == fullTexID);
+                        OrderedDictionary faceSpriteData = new OrderedDictionary();
+                        System.Drawing.RectangleF faceRect = new System.Drawing.RectangleF(facePos.x, facePos.y, faceSize.width, faceSize.height);
+                        faceSpriteData.Add("alphaTex", (Texture2D)faceAlphaTex.Asset);
+                        faceSpriteData.Add("fullTex", (Texture2D)fullTex.Asset);
+                        faceSpriteData.Add("faceRect", faceRect);
+                        if (itemID == fullSpriteID)
+                            faceSpriteData.Add("isFace", false);
+                        else
+                            faceSpriteData.Add("isFace", true);
+
+                        return faceSpriteData;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static Texture2D TryFindAlphaAtlas(AssetItem assetItem, OrderedDictionary avgCharSpiteHub = null, bool isFace = false)
         {
             Sprite m_Sprite = (Sprite)assetItem.Asset;
             var srcType = "arts/characters";
+            long alphaID = 0;
             if (m_Sprite.m_RD.alphaTexture.m_PathID == 0)
             {
                 if (assetItem.Container.Contains("avg/characters"))
-                    srcType = "avg/characters";
-                foreach (var item in exportableAssets)
                 {
-                    if (item.Type == ClassIDType.Texture2D)
+                    if (avgCharSpiteHub == null)
+                        avgCharSpiteHub = GetAvgSpriteHub(assetItem);
+                    if (avgCharSpiteHub != null)
                     {
-                        if (item.Container.Contains(srcType) && item.Container.Contains($"illust_{m_Sprite.m_Name}_material") && item.Text.Contains("[alpha]"))
-                            return (Texture2D)item.Asset;
-                        else if (item.Container.Contains(srcType) && item.Text.Contains($"{m_Sprite.m_Name}[alpha]"))
-                            return (Texture2D)item.Asset;
+                        var sprites = ((IEnumerable)avgCharSpiteHub["sprites"]).Cast<object>().ToList();
+                        OrderedDictionary lastSprite = null;
+                        if (sprites.Count > 1)
+                            lastSprite = (OrderedDictionary)sprites.Last();
+                        foreach (var spriteObj in sprites)
+                        {
+                            var spriteData = (OrderedDictionary)spriteObj;
+                            var sprite = (OrderedDictionary)spriteData["sprite"];
+                            if ((long)sprite["m_PathID"] == m_Sprite.m_PathID)
+                            {
+                                OrderedDictionary alphaSprite = null;
+                                if (isFace && lastSprite != null)
+                                    alphaSprite = (OrderedDictionary)lastSprite["alphaTex"];
+                                else
+                                    alphaSprite = (OrderedDictionary)spriteData["alphaTex"];
+                                alphaID = (long)alphaSprite["m_PathID"];
+                                var alphaTex = exportableAssets.Find(x => x.m_PathID == alphaID);
+
+                                return (Texture2D)alphaTex.Asset;
+                            }
+                        }
                     }
+                    srcType = "avg/characters";
                 }
+                if (alphaID == 0)
+                    foreach (var item in exportableAssets)
+                    {
+                        if (item.Type == ClassIDType.Texture2D)
+                        {
+                            if (item.Container.Contains(srcType) && item.Container.Contains($"illust_{m_Sprite.m_Name}_material") && item.Text.Contains("[alpha]"))
+                                return (Texture2D)item.Asset;
+                            else if (item.Container.Contains(srcType) && item.Text.Contains($"{m_Sprite.m_Name}[alpha]"))
+                                return (Texture2D)item.Asset;
+                        }
+                    }
             }
             return null;
         }
